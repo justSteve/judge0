@@ -7,3 +7,30 @@ tmp/*
 coverage/
 srv/
 environment
+
+# SSH Keys and Security Files
+*.pem
+*.key
+*.ppk
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+.ssh/
+*.pub.key
+
+# Azure and Cloud Credentials
+*.publishsettings
+*.azureProfile
+credentials.json
+service-account.json
+
+# Environment and Secrets
+.env
+.env.local
+.env.*.local
+secrets.yml
+secrets.yaml
+*secret*
+*password*
+*token*

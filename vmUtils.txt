@@ -1,0 +1,33 @@
+################################################################################
+# Azure VM Quick Commands for Judge0 Deployment
+################################################################################
+# See AZURE_CLI_GUIDE.md for detailed explanations
+
+# 1. Create resource group
+az group create --name ubuntuRG --location eastus2
+
+# 2. Create VM with Ubuntu 22.04 (UPDATED - Judge0 requires Ubuntu, not SUSE!)
+az vm create --resource-group ubuntuRG --name uJudge0 --image Ubuntu2204 --size Standard_D2s_v3 --public-ip-sku Standard --admin-username azureuser --generate-ssh-keys
+
+# 3. Open ports for SSH and Judge0 API
+az vm open-port --resource-group ubuntuRG --name uJudge0 --port 22 --priority 1000
+az vm open-port --resource-group ubuntuRG --name uJudge0 --port 2358 --priority 1001
+
+# 4. Get VM's public IP address
+az vm list-ip-addresses --resource-group ubuntuRG --name uJudge0 --output table
+
+# 5. Connect via SSH (replace <PUBLIC-IP> with IP from step 4)
+# ssh azureuser@<PUBLIC-IP>
+
+# 6. Transfer files to VM (run from Windows)
+# scp -r "C:\Users\steve\OneDrive\Code\myClaude\tooling\judge0" azureuser@<PUBLIC-IP>:~/
+
+# 7. Management commands
+az vm start --resource-group ubuntuRG --name uJudge0
+az vm deallocate --resource-group ubuntuRG --name uJudge0
+az vm restart --resource-group ubuntuRG --name uJudge0
+
+# 8. Cleanup commands
+az vm delete --resource-group ubuntuRG --name uJudge0 --yes --no-wait
+az group delete --name ubuntuRG --yes --no-wait
+   

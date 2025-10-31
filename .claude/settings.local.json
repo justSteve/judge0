@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"[System.Web.Security.Membership]::GeneratePassword(32,8)\")",
+      "WebFetch(domain:www.random.org)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
