@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "product": "Smart Coffee Maker",
+    "review": "I bought this coffee maker last month and I have mixed feelings. On the positive side, it makes great coffee and heats up quickly. The design is sleek and doesn't take much counter space. However, it's quite expensive and the water reservoir is small, so I have to refill it often. The controls are a bit confusing at first. Overall, I'd probably recommend it to coffee enthusiasts who don't mind the price, but casual coffee drinkers might want something simpler.",
+    "expected_sentiment": "neutral",
+    "expected_recommendation": "yes"
+  },
+  {
+    "id": 2,
+    "product": "Wireless Earbuds Pro",
+    "review": "These earbuds are absolutely fantastic! The sound quality is incredible, the noise cancellation works perfectly, and the battery life easily lasts all day. They're comfortable even after hours of use. Setup was instant with my phone. Worth every penny!",
+    "expected_sentiment": "positive",
+    "expected_recommendation": "yes"
+  },
+  {
+    "id": 3,
+    "product": "Budget Tablet",
+    "review": "Disappointing purchase. The screen is dim and unresponsive, apps crash constantly, and the battery barely lasts 2 hours. The camera quality is terrible. I returned it after a week. Save your money and get something else.",
+    "expected_sentiment": "negative",
+    "expected_recommendation": "no"
+  },
+  {
+    "id": 4,
+    "product": "Ergonomic Desk Chair",
+    "review": "After three months of daily use, I can say this chair has been a good investment. My back pain has reduced significantly and the adjustable features are helpful. The assembly was a bit complicated and took about an hour. The material feels durable but time will tell. For the price point, it's a solid choice for anyone working from home.",
+    "expected_sentiment": "positive",
+    "expected_recommendation": "yes"
+  },
+  {
+    "id": 5,
+    "product": "Smart Home Hub",
+    "review": "Setup was more complicated than advertised - took me 3 hours to get everything working. Once configured, it works well with most of my devices, though some older smart plugs aren't compatible. The app could be more intuitive. It's useful but not essential.",
+    "expected_sentiment": "neutral",
+    "expected_recommendation": "unclear"
+  }
+]
