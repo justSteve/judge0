@@ -1,6 +1,14 @@
 # Judge0 Management Scripts
 
-Scripts for managing your Judge0 instance on Azure VM.
+Scripts for managing your Judge0 instance.
+
+## Deployment Options
+
+| Platform | Guide | Scripts |
+|----------|-------|---------|
+| **WSL2 (Windows)** | [README-WSL.md](wsl/README-WSL.md) | `wsl/setup-wsl.sh`, `wsl/Bootstrap-Judge0-WSL.ps1` |
+| **Azure VM (Linux)** | See below | `check-and-update.sh`, `restart.sh`, `status.sh` |
+| **Azure VM (Windows)** | [README-PowerShell.md](README-PowerShell.md) | PowerShell scripts |
 
 ## Scripts Overview
 
