@@ -35,3 +35,4 @@ secrets.yaml
 *password*
 *token*
 nul
+.claude/settings.local.json
