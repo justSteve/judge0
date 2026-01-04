@@ -163,12 +163,34 @@ Key settings in `judge0.conf`:
 
 **This fork adds**:
 
+- `docs/fork/` — Fork-specific documentation ([INDEX](docs/fork/INDEX.md))
+  - `guides/` — Docker, language configuration, deployment guides
+  - `architecture/` — Session layer design, future plans
 - `scripts/` — Infrastructure management (PowerShell, Bash)
 - `.dspy/lib/judge0_client/` — Python client library
 - `.dspy/` — DSPy learning sandbox (see `.dspy/CLAUDE.md`)
+- `.steve/` — Azure deployment guides
+- `db/languages/active-minimal.rb` — Minimal language config (10 languages)
 
 **Upstream Judge0**:
 
 - `app/` — Rails application
+- `docs/api/` — API reference documentation
 - `docker-compose.yml` — Service orchestration
 - `judge0.conf` — Configuration
+
+---
+
+## Quick Start
+
+See [Docker Quick Start](docs/fork/guides/DOCKER-QUICKSTART.md) for local setup.
+
+```bash
+# Start services
+docker-compose up -d
+
+# Test execution
+curl -X POST "http://localhost:2358/submissions?wait=true" \
+  -H "Content-Type: application/json" \
+  -d '{"source_code": "print(1+1)", "language_id": 71}'
+```
