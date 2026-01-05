@@ -96,10 +96,37 @@ The new workflow eliminates copy/paste:
 
 ## What's NOT Ready Yet
 
-- **MCP Tool Integration** - Claude can't directly POST yet (needs MCP tool)
 - **Session layer** - Design exists but not implemented
 - **Beads integration** - Future phase
 - **Production logging** - Enhanced v2 clients exist but not integrated
+
+---
+
+## MCP Server
+
+The Judge0 MCP server enables Claude to execute code directly.
+
+### Setup
+
+1. **Build the server** (already done):
+   ```bash
+   cd mcp-server
+   npm install
+   npm run build
+   ```
+
+2. **Restart Claude Code** to load `.mcp.json`
+
+3. **Approve the MCP server** when prompted
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `mcp__judge0__execute_code` | Execute code (python, javascript, bash, etc.) |
+| `mcp__judge0__get_submission` | Get result by token |
+| `mcp__judge0__list_languages` | List available languages |
+| `mcp__judge0__judge0_status` | Check if Judge0 is running |
 
 ---
 
