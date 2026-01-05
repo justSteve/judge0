@@ -387,7 +387,11 @@
     }
 
     async function fetchSubmissions() {
-      const response = await fetch(`${API_URL}/submissions?per_page=20&base64_encoded=true`);
+      const response = await fetch(`${API_URL}/submissions?per_page=20&base64_encoded=true`, {
+        headers: {
+          'X-Auth-User': 'local-observer-token'
+        }
+      });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }

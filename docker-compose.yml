@@ -10,6 +10,7 @@ services:
     image: judge0/judge0:latest
     volumes:
       - ./judge0.conf:/judge0.conf:ro
+      - ./public/observer.html:/api/public/observer.html:ro
     ports:
       - "2358:2358"
     privileged: true
