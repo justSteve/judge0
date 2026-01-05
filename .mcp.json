@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "judge0": {
-      "command": "node",
-      "args": ["C:/myStuff/_tooling/Judge0/mcp-server/dist/index.js"],
+      "command": "C:/Users/steve/.bun/bin/bun.exe",
+      "args": ["run", "C:/myStuff/_tooling/Judge0/mcp-server/src/index.ts"],
       "env": {
         "JUDGE0_URL": "http://localhost:2358"
       }

@@ -36,17 +36,12 @@
       color: #f0f6fc;
     }
 
-    .controls {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
     .status-indicator {
       display: flex;
       align-items: center;
       gap: 8px;
       font-size: 14px;
+      color: #8b949e;
     }
 
     .status-dot {
@@ -57,28 +52,9 @@
       animation: pulse 2s infinite;
     }
 
-    .status-dot.paused {
-      background: #f85149;
-      animation: none;
-    }
-
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
-    }
-
-    button {
-      background: #21262d;
-      border: 1px solid #30363d;
-      color: #c9d1d9;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: #30363d;
     }
 
     .submission {
@@ -204,38 +180,16 @@
       border-radius: 6px;
       margin-bottom: 16px;
     }
-
-    .stats {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 16px;
-      font-size: 14px;
-      color: #8b949e;
-    }
-
-    .stat-value {
-      color: #c9d1d9;
-      font-weight: 600;
-    }
   </style>
 </head>
 <body>
   <header>
     <h1>Execution Observer</h1>
-    <div class="controls">
-      <div class="status-indicator">
-        <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Auto-refresh ON</span>
-      </div>
-      <button id="toggleRefresh">Pause</button>
-      <button id="manualRefresh">Refresh Now</button>
+    <div class="status-indicator">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="lastUpdate">-</span>
     </div>
   </header>
-
-  <div class="stats">
-    <span>Last update: <span class="stat-value" id="lastUpdate">-</span></span>
-    <span>Submissions: <span class="stat-value" id="submissionCount">0</span></span>
-  </div>
 
   <div id="error" class="connection-error" style="display: none;"></div>
 
@@ -244,8 +198,6 @@
   <script>
     const API_URL = window.location.origin;
     const REFRESH_INTERVAL = 3000;
-    let refreshEnabled = true;
-    let refreshTimer = null;
 
     const statusNames = {
       1: 'In Queue',
@@ -386,8 +338,8 @@
       `;
     }
 
-    async function fetchSubmissions() {
-      const response = await fetch(`${API_URL}/submissions?per_page=20&base64_encoded=true`, {
+    async function fetchLatestSubmission() {
+      const response = await fetch(`${API_URL}/submissions?per_page=1&base64_encoded=true`, {
         headers: {
           'X-Auth-User': 'local-observer-token'
         }
@@ -396,20 +348,20 @@
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       const data = await response.json();
-      return data.submissions || [];
+      const submissions = data.submissions || [];
+      return submissions.length > 0 ? submissions[0] : null;
     }
 
     async function refresh() {
       const errorEl = document.getElementById('error');
       const feedEl = document.getElementById('feed');
       const lastUpdateEl = document.getElementById('lastUpdate');
-      const countEl = document.getElementById('submissionCount');
 
       try {
-        const submissions = await fetchSubmissions();
+        const submission = await fetchLatestSubmission();
         errorEl.style.display = 'none';
 
-        if (submissions.length === 0) {
+        if (!submission) {
           feedEl.innerHTML = `
             <div class="empty-state">
               <h2>No submissions yet</h2>
@@ -417,7 +369,7 @@
             </div>
           `;
         } else {
-          feedEl.innerHTML = submissions.map(renderSubmission).join('');
+          feedEl.innerHTML = renderSubmission(submission);
         }
 
         lastUpdateEl.textContent = new Date().toLocaleTimeString('en-US', {
@@ -426,7 +378,6 @@
           second: '2-digit',
           hour12: false
         });
-        countEl.textContent = submissions.length;
 
       } catch (e) {
         errorEl.textContent = `Connection error: ${e.message}. Is Judge0 running?`;
@@ -434,41 +385,10 @@
       }
     }
 
-    function startRefresh() {
-      refresh();
-      refreshTimer = setInterval(refresh, REFRESH_INTERVAL);
-    }
-
-    function stopRefresh() {
-      if (refreshTimer) {
-        clearInterval(refreshTimer);
-        refreshTimer = null;
-      }
-    }
-
-    document.getElementById('toggleRefresh').addEventListener('click', function() {
-      refreshEnabled = !refreshEnabled;
-      const statusDot = document.getElementById('statusDot');
-      const statusText = document.getElementById('statusText');
-
-      if (refreshEnabled) {
-        this.textContent = 'Pause';
-        statusDot.classList.remove('paused');
-        statusText.textContent = 'Auto-refresh ON';
-        startRefresh();
-      } else {
-        this.textContent = 'Resume';
-        statusDot.classList.add('paused');
-        statusText.textContent = 'Auto-refresh OFF';
-        stopRefresh();
-      }
-    });
-
-    document.getElementById('manualRefresh').addEventListener('click', refresh);
-
-    // Initialize
+    // Initialize - auto-refresh every 3 seconds
     fetchLanguages().then(() => {
-      startRefresh();
+      refresh();
+      setInterval(refresh, REFRESH_INTERVAL);
     });
   </script>
 </body>
