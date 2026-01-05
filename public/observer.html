@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Judge0 Execution Observer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.5;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+
+    .controls {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3fb950;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.paused {
+      background: #f85149;
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    button {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #30363d;
+    }
+
+    .submission {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .submission-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #21262d;
+      border-bottom: 1px solid #30363d;
+      font-size: 13px;
+    }
+
+    .submission-meta {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .token {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #58a6ff;
+    }
+
+    .language {
+      background: #388bfd26;
+      color: #58a6ff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .timestamp {
+      color: #8b949e;
+    }
+
+    .status-badge {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-1, .status-2 { /* In Queue, Processing */
+      background: #9e6a0326;
+      color: #d29922;
+    }
+
+    .status-3 { /* Accepted */
+      background: #23883826;
+      color: #3fb950;
+    }
+
+    .status-4, .status-5, .status-6, .status-7, .status-8, .status-9, .status-10, .status-11, .status-12 { /* Errors */
+      background: #f8514926;
+      color: #f85149;
+    }
+
+    .status-13 { /* Internal Error */
+      background: #f8514926;
+      color: #f85149;
+    }
+
+    .submission-body {
+      padding: 16px;
+    }
+
+    .code-section, .output-section {
+      margin-bottom: 16px;
+    }
+
+    .code-section:last-child, .output-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-label {
+      font-size: 12px;
+      color: #8b949e;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    pre {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .stdout { color: #c9d1d9; }
+    .stderr { color: #f85149; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #8b949e;
+    }
+
+    .empty-state h2 {
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: #c9d1d9;
+    }
+
+    .connection-error {
+      background: #f8514926;
+      border: 1px solid #f85149;
+      color: #f85149;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #8b949e;
+    }
+
+    .stat-value {
+      color: #c9d1d9;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Execution Observer</h1>
+    <div class="controls">
+      <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Auto-refresh ON</span>
+      </div>
+      <button id="toggleRefresh">Pause</button>
+      <button id="manualRefresh">Refresh Now</button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <span>Last update: <span class="stat-value" id="lastUpdate">-</span></span>
+    <span>Submissions: <span class="stat-value" id="submissionCount">0</span></span>
+  </div>
+
+  <div id="error" class="connection-error" style="display: none;"></div>
+
+  <div id="feed"></div>
+
+  <script>
+    const API_URL = window.location.origin;
+    const REFRESH_INTERVAL = 3000;
+    let refreshEnabled = true;
+    let refreshTimer = null;
+
+    const statusNames = {
+      1: 'In Queue',
+      2: 'Processing',
+      3: 'Accepted',
+      4: 'Wrong Answer',
+      5: 'Time Limit Exceeded',
+      6: 'Compilation Error',
+      7: 'Runtime Error (SIGSEGV)',
+      8: 'Runtime Error (SIGXFSZ)',
+      9: 'Runtime Error (SIGFPE)',
+      10: 'Runtime Error (SIGABRT)',
+      11: 'Runtime Error (NZEC)',
+      12: 'Runtime Error (Other)',
+      13: 'Internal Error',
+      14: 'Exec Format Error'
+    };
+
+    const languageNames = {};
+
+    async function fetchLanguages() {
+      try {
+        const response = await fetch(`${API_URL}/languages/all`);
+        const languages = await response.json();
+        languages.forEach(lang => {
+          languageNames[lang.id] = lang.name;
+        });
+      } catch (e) {
+        console.error('Failed to fetch languages:', e);
+      }
+    }
+
+    function decodeBase64(str) {
+      if (!str) return '';
+      try {
+        return atob(str);
+      } catch (e) {
+        return str;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function formatTimestamp(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+    }
+
+    function getStatusName(statusId) {
+      return statusNames[statusId] || `Status ${statusId}`;
+    }
+
+    function getLanguageName(langId) {
+      return languageNames[langId] || `Language ${langId}`;
+    }
+
+    function renderSubmission(sub) {
+      const statusId = sub.status?.id || sub.status_id || 0;
+      const sourceCode = decodeBase64(sub.source_code) || '(no source)';
+      const stdout = decodeBase64(sub.stdout) || '';
+      const stderr = decodeBase64(sub.stderr) || '';
+      const compileOutput = decodeBase64(sub.compile_output) || '';
+
+      let outputHtml = '';
+
+      if (stdout) {
+        outputHtml += `
+          <div class="output-section">
+            <div class="section-label">stdout</div>
+            <pre class="stdout">${escapeHtml(stdout)}</pre>
+          </div>
+        `;
+      }
+
+      if (stderr) {
+        outputHtml += `
+          <div class="output-section">
+            <div class="section-label">stderr</div>
+            <pre class="stderr">${escapeHtml(stderr)}</pre>
+          </div>
+        `;
+      }
+
+      if (compileOutput) {
+        outputHtml += `
+          <div class="output-section">
+            <div class="section-label">compile output</div>
+            <pre class="stderr">${escapeHtml(compileOutput)}</pre>
+          </div>
+        `;
+      }
+
+      if (!stdout && !stderr && !compileOutput && statusId <= 2) {
+        outputHtml = `
+          <div class="output-section">
+            <div class="section-label">output</div>
+            <pre class="stdout" style="color: #8b949e; font-style: italic;">Waiting for execution...</pre>
+          </div>
+        `;
+      } else if (!stdout && !stderr && !compileOutput) {
+        outputHtml = `
+          <div class="output-section">
+            <div class="section-label">output</div>
+            <pre class="stdout" style="color: #8b949e; font-style: italic;">(no output)</pre>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="submission">
+          <div class="submission-header">
+            <div class="submission-meta">
+              <span class="token">${sub.token?.substring(0, 8) || 'unknown'}...</span>
+              <span class="language">${getLanguageName(sub.language_id)}</span>
+              <span class="timestamp">${formatTimestamp(sub.created_at)}</span>
+            </div>
+            <span class="status-badge status-${statusId}">${getStatusName(statusId)}</span>
+          </div>
+          <div class="submission-body">
+            <div class="code-section">
+              <div class="section-label">source code</div>
+              <pre>${escapeHtml(sourceCode)}</pre>
+            </div>
+            ${outputHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchSubmissions() {
+      const response = await fetch(`${API_URL}/submissions?per_page=20&base64_encoded=true`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const data = await response.json();
+      return data.submissions || [];
+    }
+
+    async function refresh() {
+      const errorEl = document.getElementById('error');
+      const feedEl = document.getElementById('feed');
+      const lastUpdateEl = document.getElementById('lastUpdate');
+      const countEl = document.getElementById('submissionCount');
+
+      try {
+        const submissions = await fetchSubmissions();
+        errorEl.style.display = 'none';
+
+        if (submissions.length === 0) {
+          feedEl.innerHTML = `
+            <div class="empty-state">
+              <h2>No submissions yet</h2>
+              <p>Submissions will appear here when Claude executes code.</p>
+            </div>
+          `;
+        } else {
+          feedEl.innerHTML = submissions.map(renderSubmission).join('');
+        }
+
+        lastUpdateEl.textContent = new Date().toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
+        countEl.textContent = submissions.length;
+
+      } catch (e) {
+        errorEl.textContent = `Connection error: ${e.message}. Is Judge0 running?`;
+        errorEl.style.display = 'block';
+      }
+    }
+
+    function startRefresh() {
+      refresh();
+      refreshTimer = setInterval(refresh, REFRESH_INTERVAL);
+    }
+
+    function stopRefresh() {
+      if (refreshTimer) {
+        clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+
+    document.getElementById('toggleRefresh').addEventListener('click', function() {
+      refreshEnabled = !refreshEnabled;
+      const statusDot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+
+      if (refreshEnabled) {
+        this.textContent = 'Pause';
+        statusDot.classList.remove('paused');
+        statusText.textContent = 'Auto-refresh ON';
+        startRefresh();
+      } else {
+        this.textContent = 'Resume';
+        statusDot.classList.add('paused');
+        statusText.textContent = 'Auto-refresh OFF';
+        stopRefresh();
+      }
+    });
+
+    document.getElementById('manualRefresh').addEventListener('click', refresh);
+
+    // Initialize
+    fetchLanguages().then(() => {
+      startRefresh();
+    });
+  </script>
+</body>
+</html>

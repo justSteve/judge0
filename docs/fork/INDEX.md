@@ -9,6 +9,14 @@ This index organizes documentation specific to this Judge0 fork — the agent ex
 | [CLAUDE.md](../../CLAUDE.md) | Vision statement + technical reference | Root |
 | [AGENTS.md](../../AGENTS.md) | Agent workflow instructions | Root |
 | [Session Layer Design](./architecture/SESSION-LAYER-DESIGN.md) | Persistent execution sessions | Architecture |
+| [Execution Observer Design](./plans/2026-01-04-execution-observer-design.md) | Zero-friction workflow design | Plans |
+
+## User Interfaces
+
+| Interface | Purpose | URL |
+|-----------|---------|-----|
+| [Observer](../../public/observer.html) | Watch Claude's executions (no input) | `/observer.html` |
+| [Dummy Client](../../public/dummy-client.html) | Manual test input | `/dummy-client.html` |
 
 ## Guides
 
