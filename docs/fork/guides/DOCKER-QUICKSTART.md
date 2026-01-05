@@ -126,7 +126,6 @@ docker-compose up -d
 | ID | Language | Command |
 |----|----------|---------|
 | 46 | Bash 5.0.0 | `bash script.sh` |
-| 62 | Java OpenJDK 13.0.1 | Compile + run |
 | 63 | JavaScript Node.js 12.14.0 | `node script.js` |
 | 71 | Python 3.8.1 | `python3 script.py` |
 | 74 | TypeScript 3.7.4 | Compile to JS + run |
@@ -177,17 +176,6 @@ curl -X POST "http://localhost:2358/submissions?wait=true" \
   -d '{
     "source_code": "echo \"Hello from Bash\" && date",
     "language_id": 46
-  }'
-```
-
-### Java
-
-```bash
-curl -X POST "http://localhost:2358/submissions?wait=true" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "source_code": "public class Main { public static void main(String[] args) { System.out.println(\"Hello from Java\"); } }",
-    "language_id": 62
   }'
 ```
 

@@ -135,18 +135,18 @@ client = Judge0Client(config)
 | 12 | Compilation Error |
 | 13 | Internal Error |
 
-### Language IDs (Common)
+### Language IDs (Core Set)
 
 | ID | Language |
 |----|----------|
-| 71 | Python 3 |
+| 46 | Bash |
 | 63 | JavaScript (Node.js) |
-| 62 | Java |
-| 54 | C++ (GCC) |
-| 50 | C (GCC) |
+| 71 | Python 3 |
+| 74 | TypeScript |
+| 60 | Go |
 | 72 | Ruby |
 | 73 | Rust |
-| 60 | Go |
+| 82 | SQL (SQLite) |
 
 Full list: `GET /languages/all`
 

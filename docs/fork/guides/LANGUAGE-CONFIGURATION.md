@@ -55,7 +55,6 @@ Optimized for agent workflows:
 | 43 | Plain Text | Output/debugging |
 | 46 | Bash 5.0.0 | System scripting |
 | 60 | Go 1.13.5 | Systems programming |
-| 62 | Java OpenJDK 13 | Enterprise/DSPy |
 | 63 | JavaScript Node.js 12 | Web/scripting |
 | 71 | Python 3.8.1 | Primary scripting |
 | 72 | Ruby 2.7.0 | Scripting |

@@ -72,12 +72,11 @@ The following are original Judge0 documents:
 
 ## Quick Reference
 
-### Language IDs (Most Used)
+### Language IDs (Core Set)
 
 | ID | Language |
 |----|----------|
 | 46 | Bash (5.0.0) |
-| 62 | Java (OpenJDK 13.0.1) |
 | 63 | JavaScript (Node.js 12.14.0) |
 | 71 | Python (3.8.1) |
 | 74 | TypeScript (3.7.4) |

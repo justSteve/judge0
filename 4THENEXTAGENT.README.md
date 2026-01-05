@@ -93,7 +93,6 @@ curl -X POST "http://localhost:2358/submissions?wait=true" \
 | ID | Language |
 |----|----------|
 | 46 | Bash 5.0.0 |
-| 62 | Java OpenJDK 13 |
 | 63 | JavaScript Node.js 12 |
 | 71 | Python 3.8.1 |
 | 74 | TypeScript 3.7.4 |

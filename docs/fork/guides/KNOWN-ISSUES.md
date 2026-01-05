@@ -3,8 +3,8 @@
 ## WSL2/Docker Desktop Language Limitations
 
 ### Affected Languages
-- **Java**: JVM fails to allocate heap memory
-- **JavaScript/TypeScript**: May timeout during initialization
+- **JavaScript/TypeScript**: May timeout during initialization (Node.js V8 cold start)
+- **Java**: JVM fails to allocate heap memory (not in minimal config)
 
 ### Root Cause
 
@@ -65,4 +65,4 @@ For agent workflows, Python and Bash cover most use cases. TypeScript can be tra
 
 This is a known limitation of running Judge0 on WSL2/Docker Desktop. The upstream Judge0 project documents this in their configuration file.
 
-For production use with Java/JavaScript support, deploy on a native Linux host or Azure VM.
+For production use with full JavaScript/TypeScript support, deploy on a native Linux host or Azure VM.

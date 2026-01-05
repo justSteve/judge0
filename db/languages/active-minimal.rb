@@ -3,7 +3,6 @@
 # This configuration includes only the core languages needed for agent workflows:
 # - Python (primary scripting)
 # - JavaScript/TypeScript (web/node workflows)
-# - Java (enterprise/DSPy)
 # - Bash (system scripting)
 # - Plus a few utility languages for agent flexibility
 #
@@ -30,14 +29,6 @@
     is_archived: false,
     source_file: "script.sh",
     run_cmd: "/usr/local/bash-5.0/bin/bash script.sh"
-  },
-  {
-    id: 62,
-    name: "Java (OpenJDK 13.0.1)",
-    is_archived: false,
-    source_file: "Main.java",
-    compile_cmd: "/usr/local/openjdk13/bin/javac %s Main.java",
-    run_cmd: "/usr/local/openjdk13/bin/java Main"
   },
   {
     id: 63,
@@ -120,6 +111,7 @@
 # - D, Elixir, Erlang (IDs: 56-58) - Specialized
 # - Common Lisp, Clojure (IDs: 55, 86) - Lisp dialects
 # - Objective-C, Swift (IDs: 79, 83) - Apple ecosystem
+# - Java (ID: 62) - JVM, WSL2 memory limitations
 # - Kotlin, Scala, Groovy (IDs: 78, 81, 88) - JVM alternatives
 # - Lua, Perl, PHP, R (IDs: 64, 68, 80, 85) - Scripting alternatives
 # - Basic, Octave (IDs: 47, 66) - Specialized
