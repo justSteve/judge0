@@ -1,0 +1,71 @@
+{
+  "$schema": "./versions.schema.json",
+  "description": "Declarative version manifest for Judge0 minimal image. Update versions here, rebuild image.",
+  "lastUpdated": "2026-01-06",
+  "languages": {
+    "python": {
+      "version": "3.12.8",
+      "installPath": "/usr/local/python-{version}",
+      "source": "https://www.python.org/ftp/python/{version}/Python-{version}.tar.xz",
+      "notes": "Primary scripting language"
+    },
+    "node": {
+      "version": "22.12.0",
+      "installPath": "/usr/local/node-{version}",
+      "source": "https://nodejs.org/dist/v{version}/node-v{version}.tar.gz",
+      "notes": "JavaScript runtime, kept for compatibility"
+    },
+    "bun": {
+      "version": "1.1.45",
+      "installPath": "/usr/local/bun-{version}",
+      "source": "https://github.com/oven-sh/bun/releases/download/bun-v{version}/bun-linux-x64.zip",
+      "notes": "Fast JS/TS runtime, primary for new work"
+    },
+    "typescript": {
+      "version": "5.7.2",
+      "installPath": "global npm package",
+      "source": "npm install -g typescript@{version}",
+      "notes": "TypeScript compiler, kept for tsc compatibility"
+    },
+    "bash": {
+      "version": "5.2",
+      "installPath": "/usr/local/bash-{version}",
+      "source": "https://ftpmirror.gnu.org/bash/bash-{version}.tar.gz",
+      "notes": "Shell scripting"
+    },
+    "go": {
+      "version": "1.23.4",
+      "installPath": "/usr/local/go-{version}",
+      "source": "https://storage.googleapis.com/golang/go{version}.linux-amd64.tar.gz",
+      "notes": "Systems programming"
+    },
+    "ruby": {
+      "version": "3.3.6",
+      "installPath": "/usr/local/ruby-{version}",
+      "source": "https://cache.ruby-lang.org/pub/ruby/{major}.{minor}/ruby-{version}.tar.gz",
+      "notes": "Scripting, Judge0 itself is Ruby"
+    },
+    "rust": {
+      "version": "1.84.0",
+      "installPath": "/usr/local/rust-{version}",
+      "source": "https://static.rust-lang.org/dist/rust-{version}-x86_64-unknown-linux-gnu.tar.gz",
+      "notes": "Systems programming"
+    },
+    "sqlite": {
+      "version": "3.47.2",
+      "installPath": "system package",
+      "source": "apt-get install sqlite3",
+      "notes": "SQL execution via system package"
+    }
+  },
+  "baseImage": {
+    "name": "judge0/buildpack-deps",
+    "tag": "buster-2019-12-28",
+    "notes": "Consider updating base image for security patches"
+  },
+  "isolate": {
+    "commit": "ad39cc4d0fbb577fb545910095c9da5ef8fc9a1a",
+    "repo": "https://github.com/judge0/isolate.git",
+    "notes": "Sandbox environment"
+  }
+}

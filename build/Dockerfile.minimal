@@ -1,0 +1,157 @@
+# Judge0 Minimal Compilers Image
+# ================================
+# Custom build with only languages needed for agent workflows.
+# See versions.json for version manifest.
+#
+# Build: docker build -f Dockerfile.minimal -t judge0/compilers:minimal .
+# Size target: ~2-3GB (vs 14GB full image)
+
+FROM judge0/buildpack-deps:buster-2019-12-28
+
+# =============================================================================
+# VERSION CONFIGURATION
+# Update these to change language versions. Keep in sync with versions.json.
+# =============================================================================
+
+ENV PYTHON_VERSION=3.12.8
+ENV NODE_VERSION=22.12.0
+ENV BUN_VERSION=1.1.45
+ENV TYPESCRIPT_VERSION=5.7.2
+ENV BASH_VERSION=5.2
+ENV GO_VERSION=1.23.4
+ENV RUBY_VERSION=3.3.6
+ENV RUST_VERSION=1.84.0
+
+# =============================================================================
+# PYTHON
+# =============================================================================
+RUN set -xe && \
+    curl -fSsL "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz" -o /tmp/python.tar.xz && \
+    mkdir /tmp/python && \
+    tar -xf /tmp/python.tar.xz -C /tmp/python --strip-components=1 && \
+    rm /tmp/python.tar.xz && \
+    cd /tmp/python && \
+    ./configure --prefix=/usr/local/python-$PYTHON_VERSION --enable-optimizations && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \
+    rm -rf /tmp/*
+
+# =============================================================================
+# NODE.JS (kept for compatibility)
+# =============================================================================
+RUN set -xe && \
+    curl -fSsL "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.gz" -o /tmp/node.tar.gz && \
+    mkdir /tmp/node && \
+    tar -xf /tmp/node.tar.gz -C /tmp/node --strip-components=1 && \
+    rm /tmp/node.tar.gz && \
+    cd /tmp/node && \
+    ./configure --prefix=/usr/local/node-$NODE_VERSION && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \
+    rm -rf /tmp/*
+
+# =============================================================================
+# TYPESCRIPT (via npm, kept for tsc compatibility)
+# =============================================================================
+RUN set -xe && \
+    /usr/local/node-$NODE_VERSION/bin/npm install -g typescript@$TYPESCRIPT_VERSION
+
+# =============================================================================
+# BUN (primary JS/TS runtime)
+# =============================================================================
+RUN set -xe && \
+    curl -fSsL "https://github.com/oven-sh/bun/releases/download/bun-v$BUN_VERSION/bun-linux-x64.zip" -o /tmp/bun.zip && \
+    mkdir -p /usr/local/bun-$BUN_VERSION/bin && \
+    unzip /tmp/bun.zip -d /tmp && \
+    mv /tmp/bun-linux-x64/bun /usr/local/bun-$BUN_VERSION/bin/ && \
+    chmod +x /usr/local/bun-$BUN_VERSION/bin/bun && \
+    rm -rf /tmp/*
+
+# =============================================================================
+# BASH
+# =============================================================================
+RUN set -xe && \
+    curl -fSsL "https://ftpmirror.gnu.org/bash/bash-$BASH_VERSION.tar.gz" -o /tmp/bash.tar.gz && \
+    mkdir /tmp/bash && \
+    tar -xf /tmp/bash.tar.gz -C /tmp/bash --strip-components=1 && \
+    rm /tmp/bash.tar.gz && \
+    cd /tmp/bash && \
+    ./configure --prefix=/usr/local/bash-$BASH_VERSION && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \
+    rm -rf /tmp/*
+
+# =============================================================================
+# GO
+# =============================================================================
+RUN set -xe && \
+    curl -fSsL "https://storage.googleapis.com/golang/go$GO_VERSION.linux-amd64.tar.gz" -o /tmp/go.tar.gz && \
+    mkdir /usr/local/go-$GO_VERSION && \
+    tar -xf /tmp/go.tar.gz -C /usr/local/go-$GO_VERSION --strip-components=1 && \
+    rm -rf /tmp/*
+
+# =============================================================================
+# RUBY
+# =============================================================================
+RUN set -xe && \
+    curl -fSsL "https://cache.ruby-lang.org/pub/ruby/3.3/ruby-$RUBY_VERSION.tar.gz" -o /tmp/ruby.tar.gz && \
+    mkdir /tmp/ruby && \
+    tar -xf /tmp/ruby.tar.gz -C /tmp/ruby --strip-components=1 && \
+    rm /tmp/ruby.tar.gz && \
+    cd /tmp/ruby && \
+    ./configure --disable-install-doc --prefix=/usr/local/ruby-$RUBY_VERSION && \
+    make -j$(nproc) && \
+    make -j$(nproc) install && \
+    rm -rf /tmp/*
+
+# =============================================================================
+# RUST
+# =============================================================================
+RUN set -xe && \
+    curl -fSsL "https://static.rust-lang.org/dist/rust-$RUST_VERSION-x86_64-unknown-linux-gnu.tar.gz" -o /tmp/rust.tar.gz && \
+    mkdir /tmp/rust && \
+    tar -xf /tmp/rust.tar.gz -C /tmp/rust --strip-components=1 && \
+    rm /tmp/rust.tar.gz && \
+    cd /tmp/rust && \
+    ./install.sh --prefix=/usr/local/rust-$RUST_VERSION --components=rustc,rust-std-x86_64-unknown-linux-gnu && \
+    rm -rf /tmp/*
+
+# =============================================================================
+# SQLITE (system package)
+# =============================================================================
+RUN set -xe && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends sqlite3 && \
+    rm -rf /var/lib/apt/lists/*
+
+# =============================================================================
+# LOCALE CONFIGURATION
+# =============================================================================
+RUN set -xe && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends locales && \
+    rm -rf /var/lib/apt/lists/* && \
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
+
+# =============================================================================
+# ISOLATE SANDBOX
+# =============================================================================
+RUN set -xe && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends git libcap-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    git clone https://github.com/judge0/isolate.git /tmp/isolate && \
+    cd /tmp/isolate && \
+    git checkout ad39cc4d0fbb577fb545910095c9da5ef8fc9a1a && \
+    make -j$(nproc) install && \
+    rm -rf /tmp/*
+ENV BOX_ROOT /var/local/lib/isolate
+
+# =============================================================================
+# METADATA
+# =============================================================================
+LABEL maintainer="justSteve"
+LABEL version="minimal-1.0.0"
+LABEL description="Minimal Judge0 compilers: Python, Node, Bun, TS, Bash, Go, Ruby, Rust, SQL"
