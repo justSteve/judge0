@@ -5,9 +5,9 @@ Custom Docker image with only the languages needed for agent workflows.
 ## Quick Start
 
 ```bash
-# Build the minimal image
-cd build
-docker build -f Dockerfile.minimal -t judge0/compilers:minimal .
+# Build the minimal image (from Judge0 root)
+cd C:\myStuff\_tooling\Judge0
+docker build -f build/Dockerfile.minimal -t judge0/compilers:minimal .
 
 # Update docker-compose.yml to use it
 # Change: image: judge0/judge0:latest
